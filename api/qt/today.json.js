@@ -137,3 +137,8 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Node 런타임 강제 (cheerio 때문에 Edge에서는 에러남)
+export const config = { runtime: "nodejs18.x" };
+
+import cheerio from "cheerio";
