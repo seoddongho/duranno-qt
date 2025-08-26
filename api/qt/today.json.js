@@ -96,3 +96,44 @@ export default async function handler(req, res) {
           cache: 'no-store',
           headers: {
             'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36',
+            'Accept-Language': 'ko,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Referer': 'https://www.duranno.com/'
+          }
+        });
+        httpStatus = r.status;
+        if (r.ok) { html = await r.text(); finalUrl = u; break; }
+        lastErr = new Error(`HTTP ${r.status} from ${u}`);
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+
+    if (!html) {
+      throw lastErr || new Error(`Duranno 페이지 수신 실패 (lastStatus=${httpStatus})`);
+    }
+
+    const { title, subtitle, verse } = parseHtml(html);
+    if (!verse) {
+      // 파싱 실패 시, 원문 일부를 로그로 남겨 원인 파악
+      console.error('[PARSE_FAIL] first 500 chars:\n', html.slice(0, 500));
+      throw new Error('본문(오늘의 말씀) 파싱 실패');
+    }
+
+    res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=86400');
+    res.status(200).json({
+      title,
+      subtitle,
+      verse,
+      sourceUrl: finalUrl,
+      tookMs: Date.now() - start
+    });
+  } catch (err) {
+    // 에러를 사용자에게도 보이게 내려주면 원인 파악 빨라짐
+    res.status(500).json({
+      error: String(err?.message || err),
+      tookMs: Date.now() - start
+    });
+  }
+}
