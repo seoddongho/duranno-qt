@@ -1,7 +1,6 @@
 // /api/qt/today.json.js  — Vercel Serverless Function (Node 런타임)
 
 // Node 런타임 강제 (cheerio 때문에 Edge에서는 에러남)
-export const config = { runtime: "nodejs18.x" };
 import cheerio from 'cheerio';
 
 // 날짜별 Duranno URL 후보들
