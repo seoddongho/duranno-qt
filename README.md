@@ -1,0 +1,1 @@
+# duranno-qt
