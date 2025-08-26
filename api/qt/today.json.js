@@ -1,8 +1,8 @@
 // /api/qt/today.json.js  — Vercel Serverless Function (Node 런타임)
-import cheerio from 'cheerio';
 
-// (중요) Node 런타임 강제: Edge로 돌면 cheerio가 깨질 수 있음
-export const config = { runtime: 'nodejs20.x' };
+// Node 런타임 강제 (cheerio 때문에 Edge에서는 에러남)
+export const config = { runtime: "nodejs18.x" };
+import cheerio from 'cheerio';
 
 // 날짜별 Duranno URL 후보들
 const buildUrls = (dateStr) => ([
@@ -138,7 +138,4 @@ export default async function handler(req, res) {
   }
 }
 
-// Node 런타임 강제 (cheerio 때문에 Edge에서는 에러남)
-export const config = { runtime: "nodejs18.x" };
 
-import cheerio from "cheerio";
